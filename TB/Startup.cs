@@ -14,6 +14,7 @@ using TB.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TB.Options;
+using TB.Installers;
 
 namespace TB
 {
@@ -29,19 +30,7 @@ namespace TB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataConrext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-              //  .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddEntityFrameworkStores<DataConrext>();
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            services.AddSwaggerGen(x => 
-            {
-                x.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title="TB API", Version="v1"});
-            });
+            services.InstallServicesInAssemblies(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
