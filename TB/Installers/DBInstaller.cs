@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +11,16 @@ namespace TB.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-             services.AddDbContext<DataConrext>(options =>
+             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
                 //  .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddEntityFrameworkStores<DataConrext>();
+                .AddEntityFrameworkStores<DataContext>();
 
-            services.AddSingleton<IPostService, PostService>();
+            services.AddScoped<IPostService, PostService>();
         }
     }
+    //Add-Migration AddedPosts20191216 =>1
+    //Update-Database => 2
 }

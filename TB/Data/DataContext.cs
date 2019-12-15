@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TB.Domain;
 
 namespace TB.Data
 {
-    public class DataConrext : IdentityDbContext
+    public class DataContext : IdentityDbContext
     {
-        public DataConrext(DbContextOptions<DataConrext> options)
+        public DataContext(DbContextOptions<DataContext> options)
             : base(options)
         {
         }
+
+       public DbSet<Post> Posts { get; set; }
     }
 }
