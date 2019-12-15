@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TB.Data;
+using TB.Services;
 
 namespace TB.Installers
 {
@@ -20,6 +21,8 @@ namespace TB.Installers
             services.AddDefaultIdentity<IdentityUser>()
                 //  .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<DataConrext>();
+
+            services.AddSingleton<IPostService, PostService>();
         }
     }
 }

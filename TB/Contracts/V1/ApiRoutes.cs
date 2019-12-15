@@ -14,9 +14,13 @@ namespace TB.Contracts.V1
 
         public static class Posts
         {
-            public const string GetAll = Base+"/posts";
-           // public const string Create = "api/v1/create";
-          //  public static readonly string Get = "api/v1/posts/{postId}";
+            public const string GetAll = Base + "/posts";
+
+            public const string Get = Base + "/posts/{postId}:Guid"; //(*)!!!!
+
+            public const string Create = Base + "/posts";
+            // public const string Create = "api/v1/create";
+            //  public static readonly string Get = "api/v1/posts/{postId}";
         }
     }
 }
