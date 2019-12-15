@@ -16,6 +16,10 @@ namespace TB.Contracts.V1
         {
             public const string GetAll = Base + "/posts";
 
+            public const string Delete = Base + "/posts/{postId}:Guid";
+
+            public const string Update = Base + "/posts/{postId}:Guid";
+
             public const string Get = Base + "/posts/{postId}:Guid"; //(*)!!!!
 
             public const string Create = Base + "/posts";
