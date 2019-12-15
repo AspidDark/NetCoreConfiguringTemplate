@@ -35,6 +35,17 @@ namespace TB.Controllers.V1
             return Ok(post);
         }
 
+        [HttpDelete(ApiRoutes.Posts.Delete)]
+        public IActionResult Delete([FromRoute]Guid postId)
+        {
+            var deleted = _postService.DeletePost(postId);
+            if (deleted)
+            {
+                return NoContent();
+            }
+            return NotFound();
+        }
+
         [HttpPut(ApiRoutes.Posts.Update)]
         public IActionResult Update([FromRoute]Guid postId, [FromBody]UpdatePostRequest request)
         {
