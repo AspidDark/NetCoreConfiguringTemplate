@@ -19,6 +19,8 @@ namespace TB.Installers
                 .AddEntityFrameworkStores<DataContext>();
 
             services.AddScoped<IPostService, PostService>();
+
+          // services.AddSingleton<IPostService, CosmosPostService>(); !!! CosmosDB
         }
     }
     //Add-Migration AddedPosts20191216 =>1
