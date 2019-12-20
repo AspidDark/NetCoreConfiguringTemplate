@@ -63,6 +63,8 @@ namespace TB
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            //JWT token
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
