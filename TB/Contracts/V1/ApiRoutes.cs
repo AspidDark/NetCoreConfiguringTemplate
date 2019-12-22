@@ -26,5 +26,12 @@ namespace TB.Contracts.V1
             // public const string Create = "api/v1/create";
             //  public static readonly string Get = "api/v1/posts/{postId}";
         }
+
+        public static class Identity
+        {
+            public const string Login = Base + "/identity/login";
+
+            public const string Register = Base + "/identity/register";
+        }
     }
 }

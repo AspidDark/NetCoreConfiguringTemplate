@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
 using System.Text;
 using TB.Options;
+using TB.Services;
 
 namespace TB.Installers
 {
@@ -19,6 +20,9 @@ namespace TB.Installers
             configuration.Bind(nameof(jwtSettings),jwtSettings);
             //object of class adding calss to settings
             services.AddSingleton(jwtSettings);
+
+            //login
+            services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //JWT token
