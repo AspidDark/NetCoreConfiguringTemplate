@@ -44,6 +44,7 @@ namespace TB
             {
                  app.UseHsts();
             }
+
             #region Swager#1
             var swaggerOptions = new SwaggerOptions();
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
