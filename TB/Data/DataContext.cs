@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TB.Domain;
 
+/// <summary>
+/// Nuget :
+/// Microsoft.EntityFrameworkCore  -> Microsoft.EntityFrameworkCore.Sql
+/// Microsoft.AspNetCore.Identity.EntityFrameworkCore
+/// </summary>
 namespace TB.Data
 {
     public class DataContext : IdentityDbContext

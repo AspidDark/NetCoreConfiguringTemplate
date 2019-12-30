@@ -19,9 +19,17 @@ namespace TB.IntegrationTests
     //Microsoft.AspNetCore.Mvc.Testing
     //Microsoft.AspNetCore.App
     //FluentAssertions
-    public class IntegrationTest
+
+
+    /// <summary>
+    /// new v 3.0
+    /// Microsoft.EntityFrameworkCore.InMemory
+    /// Microsoft.AspNetWebApi.Client
+    /// </summary>
+    public class IntegrationTest : IDisposable
     {
         protected readonly HttpClient TestClient;
+        private readonly IServiceProvider _serviceProvider;
         protected IntegrationTest()
         {
             var appFactory = new WebApplicationFactory<Startup>()
@@ -37,7 +45,15 @@ namespace TB.IntegrationTests
                         });
                     });
                 });
+            _serviceProvider = appFactory.Services; //3.0
             TestClient = appFactory.CreateClient();
+        }
+
+        public void Dispose()
+        {
+            using var serviceScope = _serviceProvider.CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
+            context.Database.EnsureDeleted();
         }
 
         protected async Task AuthenticateAsync()
@@ -52,10 +68,6 @@ namespace TB.IntegrationTests
             return await response.Content.ReadAsAsync<PostResponse>();
 
         }
-
-
-
-
 
         private async Task<string> GetJwtAsync()
         {

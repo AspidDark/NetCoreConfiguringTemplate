@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using System.Text;
 using TB.Options;
@@ -24,7 +24,11 @@ namespace TB.Installers
             //login
             services.AddScoped<IIdentityService, IdentityService>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options=>
+            {
+                options.EnableEndpointRouting = false;
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             //JWT token
             var tokenValidationParameters= new TokenValidationParameters
             {
@@ -53,20 +57,27 @@ namespace TB.Installers
 
             services.AddSwaggerGen(x =>
             {
-                x.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "TB API", Version = "v1" });
+                x.SwaggerDoc("v1", new OpenApiInfo { Title = "TB API", Version = "v1" });
                 //JWT token
-                x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description="JWT, Authorization header using the bearer scheme",
                     Name="Authorization",
-                    In="header",
-                    Type="apiKey",
+                   In=ParameterLocation.Header,
+                    Type=SecuritySchemeType.ApiKey
                 });
-                var security = new Dictionary<string, IEnumerable<string>>
+                x.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    { "Bearer", new string[0]}
-                };
-                x.AddSecurityRequirement(security);
+                    { new OpenApiSecurityScheme
+                    {
+                        Reference= new OpenApiReference
+                        { 
+                            Id="Bearer",
+                            Type=ReferenceType.SecurityScheme,
+
+                        }
+                    }, new List<string>()}
+                });
             });
         }
     }
