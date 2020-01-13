@@ -10,7 +10,7 @@ namespace TB.Contracts.V1
         public const string Root = "api";
         public const string Version = "v1";
 
-        public const string Base = Root+"/"+Version;
+        public const string Base = Root + "/" + Version;
 
         public static class Posts
         {
@@ -34,6 +34,11 @@ namespace TB.Contracts.V1
             public const string Register = Base + "/identity/register";
 
             public const string Refresh = Base + "/identity/refresh";
+        }
+
+        public static class Tags
+        {
+            public const string GetAll = Base + "/tags";
         }
     }
 }

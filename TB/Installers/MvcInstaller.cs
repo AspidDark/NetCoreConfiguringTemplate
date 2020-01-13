@@ -17,20 +17,20 @@ namespace TB.Installers
         {
             //binding from config.json to class
             var jwtSettings = new JwtSettings();
-            configuration.Bind(nameof(jwtSettings),jwtSettings);
+            configuration.Bind(nameof(jwtSettings), jwtSettings);
             //object of class adding calss to settings
             services.AddSingleton(jwtSettings);
 
             //login
             services.AddScoped<IIdentityService, IdentityService>();
 
-            services.AddMvc(options=>
+            services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
             })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             //JWT token
-            var tokenValidationParameters= new TokenValidationParameters
+            var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
@@ -48,10 +48,18 @@ namespace TB.Installers
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x=>
+            .AddJwtBearer(x =>
             {
                 x.SaveToken = true;
                 x.TokenValidationParameters = tokenValidationParameters;
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("TagViewer", policy =>
+                {
+                    policy.RequireClaim("tags.view", "true");
+                });
             });
 
 
@@ -61,17 +69,17 @@ namespace TB.Installers
                 //JWT token
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description="JWT, Authorization header using the bearer scheme",
-                    Name="Authorization",
-                   In=ParameterLocation.Header,
-                    Type=SecuritySchemeType.ApiKey
+                    Description = "JWT, Authorization header using the bearer scheme",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
                 });
                 x.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { new OpenApiSecurityScheme
                     {
                         Reference= new OpenApiReference
-                        { 
+                        {
                             Id="Bearer",
                             Type=ReferenceType.SecurityScheme,
 

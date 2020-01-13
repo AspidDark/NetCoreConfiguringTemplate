@@ -34,6 +34,11 @@ namespace TB.Services
             return response.IsSuccess;
         }
 
+        public Task<List<Tag>> GetAllTagsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Post> GetPostByIdAsync(Guid postId)
         {
             var post= await _cosmosStore.FindAsync(postId.ToString(), postId.ToString());
