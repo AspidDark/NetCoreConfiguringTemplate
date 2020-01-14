@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TB.Options;
 using TB.Installers;
 using Microsoft.Extensions.Hosting;
+using AutoMapper;
 
 namespace TB
 {
@@ -21,7 +22,8 @@ namespace TB
         public void ConfigureServices(IServiceCollection services)
         {
             services.InstallServicesInAssemblies(Configuration);
-            services.AddMvc(options => options.EnableEndpointRouting = false);
+            // services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using TB.Extensions;
-
+using AutoMapper;
 
 /// <summary>
 /// Nuget :
@@ -23,24 +23,18 @@ namespace TB.Controllers.V1
     public class PostsController : Controller
     {
         private readonly IPostService _postService;
-        public PostsController(IPostService postService)
+        private readonly IMapper _mapper;
+        public PostsController(IPostService postService, IMapper mapper)
         {
             _postService = postService;
+            _mapper = mapper;
         }
         // [Route]
         [HttpGet(ApiRoutes.Posts.GetAll)]
         public async Task<IActionResult> GetAll()
         {
             var posts = await _postService.GetPostsAsync();
-            var postResponses = posts.Select(post =>
-                new PostResponse
-                {
-                    Id = post.Id,
-                    Name = post.Name,
-                    UserId=post.UserId,
-                    Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName }).ToList()
-                }).ToList();
-            return Ok(postResponses);
+            return Ok(_mapper.Map<List<PostResponse>>(posts));
         }
 
         [HttpGet(ApiRoutes.Posts.Get)]
@@ -51,14 +45,7 @@ namespace TB.Controllers.V1
             {
                 return NotFound();
             }
-            var postResponse = new PostResponse
-            {
-                Id = post.Id,
-                Name = post.Name,
-                UserId = post.UserId,
-                Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName })
-            };
-            return Ok(postResponse);
+            return Ok(_mapper.Map<PostResponse>(post));
         }
 
         [HttpDelete(ApiRoutes.Posts.Delete)]
@@ -97,15 +84,7 @@ namespace TB.Controllers.V1
 
             if (updated)
             {
-                var postResponse = new PostResponse
-                {
-                    Id = post.Id,
-                    Name = post.Name,
-                    UserId = post.UserId,
-                    Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName })
-                };
-                return Ok(postResponse);
-
+                return Ok(_mapper.Map<PostResponse>(post));
             }
             return NotFound();
         }
@@ -123,14 +102,7 @@ namespace TB.Controllers.V1
             var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
             string locatinUri = baseUrl + "/" + ApiRoutes.Posts.Get.Replace("{postId}", post.Id.ToString());
 
-            var response = new PostResponse
-            {
-                Id = post.Id,
-                Name = post.Name,
-                UserId = post.UserId,
-                Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName })
-            };
-            return Created(locatinUri, response);
+            return Created(locatinUri, _mapper.Map<PostResponse>(post));
         }
     }
 }

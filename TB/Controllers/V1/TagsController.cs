@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TB.Contracts.V1;
@@ -18,12 +20,12 @@ namespace TB.Controllers.V1
     public class TagsController : Controller
     {
         private readonly IPostService _postService;
-       // private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
-        public TagsController(IPostService postService /*IMapper mapper*/)
+        public TagsController(IPostService postService, IMapper mapper)
         {
             _postService = postService;
-           // _mapper = mapper;
+            _mapper = mapper;
         }
         /// <summary>
         /// Returns all the tags in the system
@@ -33,9 +35,8 @@ namespace TB.Controllers.V1
         public async Task<IActionResult> GetAll()
         {
             var tags = await _postService.GetAllTagsAsync();
-            var tagResponses = tags.Select(x=>  new TagResponse { Name = x.Name });
-
-            return Ok(tagResponses);
+         //   var tagResponses = tags.Select(x=>  new TagResponse { Name = x.Name });
+            return Ok(_mapper.Map<List<TagResponse>>(tags));
         }
 
 
@@ -49,7 +50,7 @@ namespace TB.Controllers.V1
                 return NotFound();
             }
 
-            return Ok(new TagResponse { Name = tag.Name });
+            return Ok(_mapper.Map<TagResponse>(tag));
         }
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace TB.Controllers.V1
 
             var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
             var locationUri = baseUrl + "/" + ApiRoutes.Tags.Get.Replace("{tagName}", newTag.Name);
-            return Created(locationUri, new TagResponse {Name= newTag.Name });
+            return Created(locationUri, _mapper.Map<TagResponse>(newTag));
         }
 
         [HttpDelete(ApiRoutes.Tags.Delete)]
