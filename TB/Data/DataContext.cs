@@ -27,5 +27,12 @@ namespace TB.Data
 
         public DbSet<PostTag> PostTags { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<PostTag>().Ignore(xx => xx.Post).HasKey(x => new { x.PostId, x.TagName });
+        }
+
     }
 }
