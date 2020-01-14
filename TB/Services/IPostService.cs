@@ -15,5 +15,11 @@ namespace TB.Services
         Task<bool> UserOwnsPostAsync(Guid postId, string getUserId);
 
         Task<List<Tag>> GetAllTagsAsync();
+
+        Task<bool> CreateTagAsync(Tag tag);
+
+        Task<Tag> GetTagByNameAsync(string tagName);
+
+        Task<bool> DeleteTagAsync(string tagName);
     }
 }

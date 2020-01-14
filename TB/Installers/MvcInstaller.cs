@@ -58,7 +58,8 @@ namespace TB.Installers
             {
                 options.AddPolicy("TagViewer", policy =>
                 {
-                    policy.RequireClaim("tags.view", "true");
+                    policy.RequireClaim("tags.view", "true");//Claim that I can do it i have rigth to do it (permission)
+                    //role is lot of permissions
                 });
             });
 

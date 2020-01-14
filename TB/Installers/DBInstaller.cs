@@ -15,7 +15,7 @@ namespace TB.Installers
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()  //nuget=> Microsoft.AspNetCoreIdentity.UI
-                                                         //  .AddDefaultUI(UIFramework.Bootstrap4)
+                .AddRoles<IdentityRole>()                                    //  .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<DataContext>();
 
             services.AddScoped<IPostService, PostService>();
