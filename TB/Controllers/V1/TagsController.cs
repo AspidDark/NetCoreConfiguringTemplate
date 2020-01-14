@@ -2,16 +2,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TB.Contracts.V1;
 using TB.Contracts.V1.Requests;
+using TB.Contracts.V1.Responses;
 using TB.Domain;
 using TB.Extensions;
 using TB.Services;
 
 namespace TB.Controllers.V1
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles ="Admin,Poster")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme/*, Roles ="Admin,Poster"*/)]
     [Produces("application/json")]
     public class TagsController : Controller
     {
@@ -30,7 +32,10 @@ namespace TB.Controllers.V1
         [HttpGet(ApiRoutes.Tags.GetAll)]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _postService.GetAllTagsAsync());
+            var tags = await _postService.GetAllTagsAsync();
+            var tagResponses = tags.Select(x=>  new TagResponse { Name = x.Name });
+
+            return Ok(tagResponses);
         }
 
 
@@ -44,7 +49,7 @@ namespace TB.Controllers.V1
                 return NotFound();
             }
 
-            return Ok(tag);
+            return Ok(new TagResponse { Name = tag.Name });
         }
 
         /// <summary>
@@ -65,17 +70,18 @@ namespace TB.Controllers.V1
             var created = await _postService.CreateTagAsync(newTag);
             if (!created)
             {
-                return BadRequest( "Unable to create tag");
+                return BadRequest( new {error= "Unable to create tag" });
             }
 
             var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
             var locationUri = baseUrl + "/" + ApiRoutes.Tags.Get.Replace("{tagName}", newTag.Name);
-            return Created(locationUri, newTag);
+            return Created(locationUri, new TagResponse {Name= newTag.Name });
         }
 
         [HttpDelete(ApiRoutes.Tags.Delete)]
+
         // [Authorize(Roles ="Admin")]  [Authorize(Roles = "Poster")]   we need bouth of them
-        [Authorize(Roles = "Admin, Poster")] //one of them not bouth
+       // [Authorize(Roles = "Admin, Poster")] //one of them not bouth
         public async Task<IActionResult> Delete([FromRoute] string tagName)
         {
             var deleted = await _postService.DeleteTagAsync(tagName);

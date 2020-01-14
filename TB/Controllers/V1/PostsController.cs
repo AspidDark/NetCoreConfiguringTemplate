@@ -19,7 +19,7 @@ using TB.Extensions;
 /// </summary>
 namespace TB.Controllers.V1
 {
-    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PostsController : Controller
     {
         private readonly IPostService _postService;
@@ -27,11 +27,20 @@ namespace TB.Controllers.V1
         {
             _postService = postService;
         }
-       // [Route]
+        // [Route]
         [HttpGet(ApiRoutes.Posts.GetAll)]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _postService.GetPostsAsync());
+            var posts = await _postService.GetPostsAsync();
+            var postResponses = posts.Select(post =>
+                new PostResponse
+                {
+                    Id = post.Id,
+                    Name = post.Name,
+                    UserId=post.UserId,
+                    Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName }).ToList()
+                }).ToList();
+            return Ok(postResponses);
         }
 
         [HttpGet(ApiRoutes.Posts.Get)]
@@ -42,7 +51,14 @@ namespace TB.Controllers.V1
             {
                 return NotFound();
             }
-            return Ok(post);
+            var postResponse = new PostResponse
+            {
+                Id = post.Id,
+                Name = post.Name,
+                UserId = post.UserId,
+                Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName })
+            };
+            return Ok(postResponse);
         }
 
         [HttpDelete(ApiRoutes.Posts.Delete)]
@@ -70,7 +86,7 @@ namespace TB.Controllers.V1
 
             if (!userOwnsPost)
             {
-                return BadRequest(new {error="You do not own this post" });
+                return BadRequest(new { error = "You do not own this post" });
             }
 
             var post = await _postService.GetPostByIdAsync(postId);
@@ -79,8 +95,18 @@ namespace TB.Controllers.V1
 
             var updated = await _postService.UpdatePostAsync(post);
 
-            if(updated)
-            return Ok(post);
+            if (updated)
+            {
+                var postResponse = new PostResponse
+                {
+                    Id = post.Id,
+                    Name = post.Name,
+                    UserId = post.UserId,
+                    Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName })
+                };
+                return Ok(postResponse);
+
+            }
             return NotFound();
         }
 
@@ -95,9 +121,15 @@ namespace TB.Controllers.V1
             await _postService.CreatePostAsync(post);
 
             var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
-            string locatinUri =baseUrl + "/" +ApiRoutes.Posts.Get.Replace("{postId}", post.Id.ToString());
+            string locatinUri = baseUrl + "/" + ApiRoutes.Posts.Get.Replace("{postId}", post.Id.ToString());
 
-            var response = new PostResponse {Id=post.Id };
+            var response = new PostResponse
+            {
+                Id = post.Id,
+                Name = post.Name,
+                UserId = post.UserId,
+                Tags = post.Tags.Select(x => new TagResponse { Name = x.TagName })
+            };
             return Created(locatinUri, response);
         }
     }
