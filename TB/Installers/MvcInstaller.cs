@@ -67,32 +67,6 @@ namespace TB.Installers
                     //role is lot of permissions
                 });
             });
-
-
-            services.AddSwaggerGen(x =>
-            {
-                x.SwaggerDoc("v1", new OpenApiInfo { Title = "TB API", Version = "v1" });
-                //JWT token
-                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "JWT, Authorization header using the bearer scheme",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey
-                });
-                x.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { new OpenApiSecurityScheme
-                    {
-                        Reference= new OpenApiReference
-                        {
-                            Id="Bearer",
-                            Type=ReferenceType.SecurityScheme,
-
-                        }
-                    }, new List<string>()}
-                });
-            });
         }
     }
 }

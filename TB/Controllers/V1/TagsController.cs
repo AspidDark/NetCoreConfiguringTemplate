@@ -59,6 +59,8 @@ namespace TB.Controllers.V1
         /// <response code="201">Creates a tag in the system</response>
         /// <response code="400">Unable to create the tag due to validation error</response>
         [HttpPost(ApiRoutes.Tags.Create)]
+        [ProducesResponseType(typeof(TagResponse), 201)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
         public async Task<IActionResult> Create([FromBody] CreateTagRequest request)
         {
             var newTag = new Tag
@@ -71,7 +73,7 @@ namespace TB.Controllers.V1
             var created = await _postService.CreateTagAsync(newTag);
             if (!created)
             {
-                return BadRequest( new {error= "Unable to create tag" });
+                return BadRequest( new ErrorResponse { Errors =new List<ErrorModel> { new ErrorModel {Message= "Unable to create tag" } } });
             }
 
             var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
