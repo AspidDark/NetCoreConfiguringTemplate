@@ -27,4 +27,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.0-rc5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TB.Contracts\TB.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

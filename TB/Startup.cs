@@ -59,7 +59,7 @@ namespace TB
 
             //JWT token
             app.UseAuthentication();
-
+            //Its Ok
             app.UseMvc();
         }
     }

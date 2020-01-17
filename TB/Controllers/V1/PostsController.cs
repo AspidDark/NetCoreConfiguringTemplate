@@ -13,10 +13,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using TB.Extensions;
 using AutoMapper;
 
-/// <summary>
-/// Nuget :
-/// JwtBearerDefaults  -> Microsoft.AspNetCore.Authentication.JwtBearer
-/// </summary>
+// Nuget : 
+// JwtBearerDefaults  -> Microsoft.AspNetCore.Authentication.JwtBearer
 namespace TB.Controllers.V1
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
