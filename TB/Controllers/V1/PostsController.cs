@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using TB.Extensions;
 using AutoMapper;
+using TB.Cache;
 
 // Nuget : 
 // JwtBearerDefaults  -> Microsoft.AspNetCore.Authentication.JwtBearer
@@ -29,6 +30,7 @@ namespace TB.Controllers.V1
         }
         // [Route]
         [HttpGet(ApiRoutes.Posts.GetAll)]
+        [Cached(600)]
         public async Task<IActionResult> GetAll()
         {
             var posts = await _postService.GetPostsAsync();
@@ -36,6 +38,7 @@ namespace TB.Controllers.V1
         }
 
         [HttpGet(ApiRoutes.Posts.Get)]
+        [Cached(600)]
         public async Task<IActionResult> Get([FromRoute]Guid postId)//postId has to be much as!!  ApiRoutes.Posts.Get (*)
         {
             var post = await _postService.GetPostByIdAsync(postId);
