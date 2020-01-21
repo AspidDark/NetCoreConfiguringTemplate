@@ -67,6 +67,11 @@ namespace TB.Services
             return posts.Select(x => new Post { Id = Guid.Parse(x.Id), Name = x.Name }).ToList();
         }
 
+        public Task<List<Post>> GetPostsAsync(GetAllPostsFilter filter = null, PaginationFilter paginationFilter = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Tag> GetTagByNameAsync(string tagName)
         {
             throw new NotImplementedException();

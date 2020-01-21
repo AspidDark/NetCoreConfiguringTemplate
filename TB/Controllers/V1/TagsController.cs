@@ -11,6 +11,7 @@ using TB.Contracts.V1.Requests;
 using TB.Contracts.V1.Responses;
 using TB.Domain;
 using TB.Extensions;
+using TB.Policis;
 using TB.Services;
 
 namespace TB.Controllers.V1
@@ -82,9 +83,9 @@ namespace TB.Controllers.V1
         }
 
         [HttpDelete(ApiRoutes.Tags.Delete)]
-
+        [Authorize(Policy = PolicyNames.TimB)]
         // [Authorize(Roles ="Admin")]  [Authorize(Roles = "Poster")]   we need bouth of them
-       // [Authorize(Roles = "Admin, Poster")] //one of them not bouth
+        // [Authorize(Roles = "Admin, Poster")] //one of them not bouth
         public async Task<IActionResult> Delete([FromRoute] string tagName)
         {
             var deleted = await _postService.DeleteTagAsync(tagName);

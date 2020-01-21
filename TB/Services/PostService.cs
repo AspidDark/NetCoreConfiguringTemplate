@@ -16,38 +16,57 @@ namespace TB.Services
         {
             _dataContext = dataContext;
         }
-        public async Task<List<Post>> GetPostsAsync()
+
+        public async Task<List<Post>> GetPostsAsync(GetAllPostsFilter filter = null, PaginationFilter paginationFilter = null)
         {
-            return await _dataContext.Posts.ToListAsync();
+            var queryable = _dataContext.Posts.AsQueryable();
+
+            if (paginationFilter == null)
+            {
+                return await queryable.Include(x => x.Tags).ToListAsync();
+            }
+
+            queryable = AddFiltersOnQuery(filter, queryable);
+
+            var skip = (paginationFilter.PageNumber - 1) * paginationFilter.PageSize;
+            return await queryable.Include(x => x.Tags)
+                .Skip(skip).Take(paginationFilter.PageSize).ToListAsync();
         }
 
         public async Task<Post> GetPostByIdAsync(Guid postId)
         {
-            return await _dataContext.Posts.SingleOrDefaultAsync(x => x.Id == postId);
+            return await _dataContext.Posts
+                .Include(x => x.Tags)
+                .SingleOrDefaultAsync(x => x.Id == postId);
         }
 
         public async Task<bool> CreatePostAsync(Post post)
         {
+            post.Tags?.ForEach(x => x.TagName = x.TagName.ToLower());
+
+            await AddNewTags(post);
             await _dataContext.Posts.AddAsync(post);
+
             var created = await _dataContext.SaveChangesAsync();
             return created > 0;
         }
 
         public async Task<bool> UpdatePostAsync(Post postToUpdate)
         {
+            postToUpdate.Tags?.ForEach(x => x.TagName = x.TagName.ToLower());
+            await AddNewTags(postToUpdate);
             _dataContext.Posts.Update(postToUpdate);
             var updated = await _dataContext.SaveChangesAsync();
-            return updated>0;
+            return updated > 0;
         }
 
         public async Task<bool> DeletePostAsync(Guid postId)
         {
-
             var post = await GetPostByIdAsync(postId);
+
             if (post == null)
-            {
                 return false;
-            }
+
             _dataContext.Posts.Remove(post);
             var deleted = await _dataContext.SaveChangesAsync();
             return deleted > 0;
@@ -56,16 +75,20 @@ namespace TB.Services
         public async Task<bool> UserOwnsPostAsync(Guid postId, string userId)
         {
             var post = await _dataContext.Posts.AsNoTracking().SingleOrDefaultAsync(x => x.Id == postId);
+
             if (post == null)
             {
                 return false;
             }
+
             if (post.UserId != userId)
             {
                 return false;
             }
+
             return true;
         }
+
         public async Task<List<Tag>> GetAllTagsAsync()
         {
             return await _dataContext.Tags.AsNoTracking().ToListAsync();
@@ -119,14 +142,14 @@ namespace TB.Services
 
 
 
-        //private static IQueryable<Post> AddFiltersOnQuery(GetAllPostsFilter filter, IQueryable<Post> queryable)
-        //{
-        //    if (!string.IsNullOrEmpty(filter?.UserId))
-        //    {
-        //        queryable = queryable.Where(x => x.UserId == filter.UserId);
-        //    }
+        private static IQueryable<Post> AddFiltersOnQuery(GetAllPostsFilter filter, IQueryable<Post> queryable)
+        {
+            if (!string.IsNullOrEmpty(filter?.UserId))
+            {
+                queryable = queryable.Where(x => x.UserId == filter.UserId);
+            }
 
-        //    return queryable;
-        //}
+            return queryable;
+        }
     }
 }

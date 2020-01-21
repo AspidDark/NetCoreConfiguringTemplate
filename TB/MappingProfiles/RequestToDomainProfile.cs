@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using TB.Contracts.V1.Requests.Queries;
+using TB.Domain;
 
 namespace TB.MappingProfiles
 {
@@ -10,6 +8,8 @@ namespace TB.MappingProfiles
     {
         public RequestToDomainProfile()
         {
+            CreateMap<PaginationQuery, PaginationFilter>();
+            CreateMap<GetAllPostsQuery, GetAllPostsFilter>();
         }
     }
 }
