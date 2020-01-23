@@ -6,6 +6,11 @@ using TB.Options;
 using TB.Installers;
 using Microsoft.Extensions.Hosting;
 using AutoMapper;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using TB.Contracts.HealthChecks;
+using System.Linq;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace TB
 {
@@ -37,6 +42,31 @@ namespace TB
             {
                  app.UseHsts();
             }
+
+            //health checks
+            //  app.UseHealthChecks("/health");
+            app.UseHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = async (context, report) =>
+                {
+                    context.Response.ContentType = "application/json";
+
+                    var response = new HealthCheckResponse
+                    {
+                        Status = report.Status.ToString(),
+                        Checks = report.Entries.Select(x => new HealthCheck
+                        {
+                            Component = x.Key,
+                            Status = x.Value.Status.ToString(),
+                            Description = x.Value.Description
+                        }),
+                        Duration = report.TotalDuration
+                    };
+
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                }
+            });
+
 
             #region Swager#1
             var swaggerOptions = new SwaggerOptions();

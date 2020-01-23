@@ -20,10 +20,10 @@ namespace TB.Installers
             {
                 return;
             }
-            //#region helth check
-            //services.AddSingleton<IConnectionMultiplexer>(_ =>
-            //    ConnectionMultiplexer.Connect(redisCacheSettings.ConnectionString));
-            //#endregion
+            #region helth check
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(redisCacheSettings.ConnectionString));
+            #endregion
             services.AddStackExchangeRedisCache(options => options.Configuration = redisCacheSettings.ConnectionString);
             services.AddSingleton<IResponseCacheService, ResponseCacheService>();
         }
