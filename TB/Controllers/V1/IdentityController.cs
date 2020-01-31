@@ -71,5 +71,25 @@ namespace TB.Controllers.V1
                 RefreshToken = authResponse.RefreshToken
             });
         }
+        //https://www.youtube.com/watch?v=I2PChWTwmM8&t=1570s
+        [HttpPost(ApiRoutes.Identity.FacebookAuth)]
+        public async Task<IActionResult> FacebookAuth([FromBody] UserFacebookAuthRequest request)
+        {
+            var authResponse = await _identityService.LoginWithFacebookAsync(request.AccessToken);
+
+            if (!authResponse.Success)
+            {
+                return BadRequest(new AuthFailedResponse
+                {
+                    Errors = authResponse.Errors
+                });
+            }
+
+            return Ok(new AuthSuccessResponse
+            {
+                Token = authResponse.Token,
+                RefreshToken = authResponse.RefreshToken
+            });
+        }
     }
 }

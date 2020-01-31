@@ -34,6 +34,8 @@ namespace TB.Contracts.V1
             public const string Register = Base + "/identity/register";
 
             public const string Refresh = Base + "/identity/refresh";
+
+            public const string FacebookAuth = Base + "/identity/auth/fb";
         }
 
         public static class Tags

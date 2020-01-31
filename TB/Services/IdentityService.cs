@@ -17,19 +17,22 @@ namespace TB.Services
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JwtSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly DataContext _context;
+        private readonly IFacebookAuthService _facebookAuthService;
 
-
-        public IdentityService(UserManager<IdentityUser> userManager, JwtSettings jwtSettings, 
-            TokenValidationParameters tokenValidationParameters, DataContext context)
+        public IdentityService(UserManager<IdentityUser> userManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, DataContext context, RoleManager<IdentityRole> roleManager, IFacebookAuthService facebookAuthService)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings;
             _tokenValidationParameters = tokenValidationParameters;
             _context = context;
+            _roleManager = roleManager;
+            _facebookAuthService = facebookAuthService;
         }
+
 
 
         public async Task<AuthenticationResult> RegisterAsync(string email, string password)
@@ -62,7 +65,7 @@ namespace TB.Services
 
             await _userManager.AddClaimAsync(newUser, new Claim("tags.view", "true"));
 
-            return await GenerateAuthentificationResultForUserAsync(newUser);
+            return await GenerateAuthentiicationResultForUserAsync(newUser);
         }
 
 
@@ -87,7 +90,7 @@ namespace TB.Services
                 };
             }
 
-            return await GenerateAuthentificationResultForUserAsync(user);
+            return await GenerateAuthentiicationResultForUserAsync(user);
         }
 
         public async Task<AuthenticationResult> RefreshTokenAsync(string token, string refreshToken)
@@ -141,10 +144,49 @@ namespace TB.Services
             var user = await _userManager.FindByIdAsync(validatedToken.Claims
                 .Single(x => x.Type == "id").Value);
 
-            return await GenerateAuthentificationResultForUserAsync(user);
+            return await GenerateAuthentiicationResultForUserAsync(user);
         }
 
+        public async Task<AuthenticationResult> LoginWithFacebookAsync(string accessToken)
+        {
+            var validatedTokenResult = await _facebookAuthService.ValidateAccessTokenAsync(accessToken);
 
+            if (!validatedTokenResult.Data.IsValid)
+            {
+                return new AuthenticationResult
+                {
+                    Errors = new[] { "Invalid Facebook token" }
+                };
+            }
+
+            var userInfo = await _facebookAuthService.GetUserInfoAsync(accessToken);
+
+            var user = await _userManager.FindByEmailAsync(userInfo.Email);
+
+            if (user == null)
+            {
+                var identityUser = new IdentityUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Email = userInfo.Email,
+                    UserName = userInfo.Email
+                };
+
+                var createdResult = await _userManager.CreateAsync(identityUser);
+                var errors = createdResult.Errors;//errors of result
+                if (!createdResult.Succeeded)
+                {
+                    return new AuthenticationResult
+                    {
+                        Errors = new[] { "Something went wrong" }
+                    };
+                }
+
+                return await GenerateAuthentiicationResultForUserAsync(identityUser);
+            }
+
+            return await GenerateAuthentiicationResultForUserAsync(user);
+        }
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -171,7 +213,7 @@ namespace TB.Services
         }
 
 
-        private async Task<AuthenticationResult> GenerateAuthentificationResultForUserAsync(IdentityUser user)
+        private async Task<AuthenticationResult> GenerateAuthentiicationResultForUserAsync(IdentityUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
