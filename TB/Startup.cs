@@ -19,6 +19,10 @@ namespace TB
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            //var context = AdapterSmevContext.Create(configuration);
+
+            //context.Database.Migrate();
         }
 
         public IConfiguration Configuration { get; }
