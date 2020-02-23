@@ -21,7 +21,7 @@ namespace TB
             Configuration = configuration;
 
             //var context = AdapterSmevContext.Create(configuration);
-
+            //
             //context.Database.Migrate();
         }
 
