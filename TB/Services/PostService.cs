@@ -57,6 +57,10 @@ namespace TB.Services
             await AddNewTags(postToUpdate);
             _dataContext.Posts.Update(postToUpdate);
             var updated = await _dataContext.SaveChangesAsync();
+            ////or this
+            //var updated2= _dataContext.Posts.Attach(postToUpdate);
+            //updated2.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            //await _dataContext.SaveChangesAsync();
             return updated > 0;
         }
 

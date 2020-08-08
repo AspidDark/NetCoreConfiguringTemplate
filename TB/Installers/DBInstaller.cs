@@ -14,6 +14,12 @@ namespace TB.Installers
              services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection")));
+
+            //Alter
+            //services.AddDbContextPool<DataContext>(options => {
+            //    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            //});
+
             services.AddDefaultIdentity<IdentityUser>()  //nuget=> Microsoft.AspNetCoreIdentity.UI
                 .AddRoles<IdentityRole>()                                    //  .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<DataContext>();
