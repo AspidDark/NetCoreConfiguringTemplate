@@ -11,6 +11,7 @@ using TB.Contracts.HealthChecks;
 using System.Linq;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace TB
 {
@@ -32,6 +33,7 @@ namespace TB
         {
             services.InstallServicesInAssemblies(Configuration);
             // services.AddMvc(options => options.EnableEndpointRouting = false);
+           // services.AddControllers(opt => opt.Filters.Add<ValidationFilter>()); Фильтр валидации
             services.AddAutoMapper(typeof(Startup));
         }
 
@@ -95,6 +97,16 @@ namespace TB
             app.UseAuthentication();
             //Its Ok
             app.UseMvc();
+        }
+    }
+
+
+
+    public class ValidationFilter : IExceptionFilter
+    {
+        public void OnException(ExceptionContext context)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
