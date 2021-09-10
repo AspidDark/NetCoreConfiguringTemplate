@@ -36,6 +36,7 @@ namespace TB.Installers
                     }}, new List<string>()}
                 });
 
+                //Включить генерацию xml файла в настройках build... там
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 x.IncludeXmlComments(xmlPath);
